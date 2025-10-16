@@ -1,98 +1,241 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
+import { useRouter } from "expo-router";
+import { useTheme } from "../../contexts/ThemeContext";
+import { GradientBackground } from "../../components/GradientBackground";
+import { Card } from "../../components/Card";
+import { Button } from "../../components/Button";
+import { User, Settings, Heart, Star, TrendingUp, Calendar } from "lucide-react-native";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  const { theme } = useTheme();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const quickActions = [
+    {
+      title: "My Profile",
+      subtitle: "View & edit your profile",
+      icon: User,
+      color: theme.primary,
+      onPress: () => router.push("/ProfileScreen"),
+    },
+    {
+      title: "Settings",
+      subtitle: "Customize your app",
+      icon: Settings,
+      color: theme.secondary,
+      onPress: () => router.push("/SettingsScreen"),
+    },
+    {
+      title: "Favorites",
+      subtitle: "Your saved items",
+      icon: Heart,
+      color: theme.error,
+      onPress: () => {},
+    },
+    {
+      title: "Achievements",
+      subtitle: "Your milestones",
+      icon: Star,
+      color: theme.warning,
+      onPress: () => {},
+    },
+  ];
+
+  const stats = [
+    { label: "Profile Views", value: "1.2K", icon: TrendingUp, color: theme.accent },
+    { label: "Days Active", value: "45", icon: Calendar, color: theme.primary },
+  ];
+
+  return (
+    <GradientBackground gradient="background">
+      <ScrollView 
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={[styles.greeting, { color: theme.textSecondary }]}>Good morning!</Text>
+          <Text style={[styles.title, { color: theme.text }]}>Welcome back 👋</Text>
+          <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
+            Manage your profile and explore new features
+          </Text>
+        </View>
+
+        {/* Stats Cards */}
+        <View style={styles.statsContainer}>
+          {stats.map((stat, index) => {
+            const IconComponent = stat.icon;
+            return (
+              <Card key={index} style={StyleSheet.flatten([styles.statCard, { flex: 1 }])}>
+                <View style={styles.statContent}>
+                  <View style={[styles.statIcon, { backgroundColor: stat.color + '20' }]}>
+                    <IconComponent size={24} color={stat.color} />
+                  </View>
+                  <Text style={[styles.statValue, { color: theme.text }]}>{stat.value}</Text>
+                  <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{stat.label}</Text>
+                </View>
+              </Card>
+            );
+          })}
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Quick Actions</Text>
+          <View style={styles.actionsGrid}>
+            {quickActions.map((action, index) => {
+              const IconComponent = action.icon;
+              return (
+                <Card 
+                  key={index} 
+                  style={StyleSheet.flatten([styles.actionCard, { width: (width - 48) / 2 }])}
+                  onPress={action.onPress}
+                >
+                  <View style={[styles.actionIcon, { backgroundColor: action.color + '20' }]}>
+                    <IconComponent size={28} color={action.color} />
+                  </View>
+                  <Text style={[styles.actionTitle, { color: theme.text }]}>{action.title}</Text>
+                  <Text style={[styles.actionSubtitle, { color: theme.textSecondary }]}>{action.subtitle}</Text>
+                </Card>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* Main Actions */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Profile Management</Text>
+          <Card style={styles.mainActionCard}>
+            <View style={styles.mainActionContent}>
+              <View style={styles.mainActionText}>
+                <Text style={[styles.mainActionTitle, { color: theme.text }]}>Complete Your Profile</Text>
+                <Text style={[styles.mainActionSubtitle, { color: theme.textSecondary }]}>
+                  Add more details to make your profile stand out
+                </Text>
+              </View>
+            </View>
+          </Card>
+        </View>
+      </ScrollView>
+    </GradientBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
+  contentContainer: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+  header: {
+    marginBottom: 24,
+    marginTop: 20,
+  },
+  greeting: {
+    fontSize: 16,
+    marginBottom: 4,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  subtitle: {
+    fontSize: 16,
+    lineHeight: 22,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 32,
+  },
+  statCard: {
+    padding: 16,
+  },
+  statContent: {
+    alignItems: 'center',
+  },
+  statIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  section: {
+    marginBottom: 32,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  actionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  actionCard: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  actionIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  actionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  actionSubtitle: {
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+  mainActionCard: {
+    padding: 20,
+  },
+  mainActionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  mainActionText: {
+    flex: 1,
+    marginRight: 16,
+  },
+  mainActionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  mainActionSubtitle: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  mainActionButton: {
+    minWidth: 120,
   },
 });
