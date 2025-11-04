@@ -216,11 +216,15 @@ const EditProfileScreen = () => {
           </View>
           <View style={{ flex: 1 }}>
           <Button
-            title="Save Changes"
+            title="Save"
             onPress={handleSave}
-            variant="primary"
+            variant="outline"
             size="large"
-            style={styles.actionButton}
+                  style={StyleSheet.flatten([
+              styles.actionButton,
+              { borderColor: theme.border, backgroundColor: theme.card },
+            ])}
+            textStyle={{ color: theme.text }}
           />
           </View>
         </View>
